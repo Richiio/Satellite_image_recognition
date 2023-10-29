@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Satellite Image Recognition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #000;
+            color: #fff;
+        }
+        .content {
+            text-align: center;
+        }
+        .space-background {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            z-index: -1;
+            opacity: 0.5;
+        }
+        h1 {
+            color: #33ccff;
+        }
+        form {
+            margin: 20px;
+        }
+        input[type="file"] {
+            padding: 10px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        #prediction {
+            margin: 20px;
+            font-weight: bold;
+        }
+        .space-image {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+        .space-fact {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <img src="space_background.jpg" class="space-background">
+    <div class="content">
+        <h1>Satellite Image Recognition</h1>
+        <form method="POST" action="/predict" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".jpg, .jpeg, .png">
+            <input type="submit" value="Predict">
+        </form>
+        <div id="prediction"></div>
+        <img src="" class="space-image" id="spaceImage">
+        <div class="space-fact" id="spaceFact"></div>
+    </div>
+</body>
+<script>
+    
+    // Function to display random space image and fact
+    function showRandomSpaceContent() {
+        const randomImageIndex = Math.floor(Math.random() * spaceImages.length);
+        const randomFactIndex = Math.floor(Math.random() * spaceFacts.length);
+        document.getElementById('spaceImage').src = spaceImages[randomImageIndex];
+        document.getElementById('spaceFact').innerText = spaceFacts[randomFactIndex];
+    }
+
+    // Event listener for form submission
+    document.querySelector('form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const response = await fetch('/predict', {
+            method: 'POST',
+            body: formData,
+        });
+        const data = await response.json();
+        document.getElementById('prediction').innerHTML = `Prediction: ${data.prediction}`;
+
+        // Show random space image and fact after making a prediction
+        showRandomSpaceContent();
+    });
+
+    // Initial call to display random space content on page load
+    showRandomSpaceContent();
+</script>
+</html>
